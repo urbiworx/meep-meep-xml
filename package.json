@@ -1,0 +1,15 @@
+{
+    "name"         : "meep-meep-xml",
+    "version"      : "0.0.1",
+    "description"  : "Fast and lightweight XML processor",
+    "homepage"     : "http://urbiworx.de",
+    "license"      : "Apache",
+	"main": "m2xml.js",
+    "repository"   : {
+        "type":"git",
+        "url":"https://github.com/urbiworx/meep-meep-xml"
+    },
+    "keywords": [
+        "xml","fast","lightweight"
+    ]
+}
