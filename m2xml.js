@@ -22,7 +22,7 @@ module.exports = new(function(){
 		aElement.$namespaces[aPrefix]=aNamespace;
 	}
 	this.addNamespace=addNamespace;
-	this.parseXML=function(aXML){
+	this.parseXML=function(aXML,options){
 		var ret={};
 		var current=ret;
 		var hierachy=new Array();
@@ -50,17 +50,26 @@ module.exports = new(function(){
 					current[tag]={};
 					current=current[tag];
 				}
-				if (typeof(text)!=="undefined"&&text.length>0){
-					current.$text=text;
-				}
+				var attribnumber=0;
 				attribs.replace(/([^ ]*?)=["'](.*?)["']/g, function(match,attrib,value) {
 					if (attrib.indexOf("xmlns:")==0){
 						addNamespace(current,attrib.substring(6),value);
 					} else {
+						attribnumber++;
 						attrib=attrib.replace(":","$");
 						current[attrib]=value;
 					}
 				});
+				if (typeof(text)!=="undefined"&&text.length>0){
+					text=text.replace(/[\r\n\t ]+/gi," ");
+					if (text!==" "){
+						if (attribnumber==0&&options.autoinline){
+							hierachy[hierachy.length-1][tag]=text;
+						} else {
+							current.$text=text;
+						}
+					}
+				}						
 				if (attribs.length==0||attribs.lastIndexOf("/")!=attribs.length-1){
 					hierachy[hierachy.length]=current;
 				} else {
