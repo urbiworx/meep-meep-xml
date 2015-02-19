@@ -1,6 +1,6 @@
 {
     "name"         : "meep-meep-xml",
-    "version"      : "0.0.2",
+    "version"      : "0.0.3",
     "description"  : "Fast and lightweight XML processor",
     "homepage"     : "http://urbiworx.de",
     "license"      : "Apache",

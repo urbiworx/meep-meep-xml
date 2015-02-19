@@ -22,7 +22,10 @@ module.exports = new(function(){
 		aElement.$namespaces[aPrefix]=aNamespace;
 	}
 	this.addNamespace=addNamespace;
-	this.parseXML=function(aXML,options){
+	this.parseXML=function(aXML,aConfig){
+		var config=(typeof(aConfig)!=="undefined")?aConfig:{};
+		var autoinline=(typeof(config.autoinline)!=="undefined"&&config.autoinline)?true:false;
+		var ignorenamespace=(typeof(config.ignorenamespace)!=="undefined"&&config.ignorenamespace)?true:false;
 		var ret={};
 		var current=ret;
 		var hierachy=new Array();
@@ -30,7 +33,11 @@ module.exports = new(function(){
 			if (tag.indexOf("?")==0){
 				return "";
 			}
-			tag=tag.replace(":","$");
+			if (ignorenamespace){
+				tag=tag.replace("^.*?:","");
+			} else {
+				tag=tag.replace(":","$");
+			}
 			if (tag.indexOf("/")==0){
 				hierachy.pop();
 				current=hierachy[hierachy.length-1];
@@ -53,23 +60,29 @@ module.exports = new(function(){
 				var attribnumber=0;
 				attribs.replace(/([^ ]*?)=["'](.*?)["']/g, function(match,attrib,value) {
 					if (attrib.indexOf("xmlns:")==0){
-						addNamespace(current,attrib.substring(6),value);
+						if (!ignorenamespace){
+							addNamespace(current,attrib.substring(6),value);
+						}
 					} else {
 						attribnumber++;
-						attrib=attrib.replace(":","$");
+						if (ignorenamespace){
+							attrib=attrib.replace("^.*?:","");
+						} else {
+							attrib=attrib.replace(":","$");
+						}
 						current[attrib]=value;
 					}
 				});
 				if (typeof(text)!=="undefined"&&text.length>0){
 					text=text.replace(/[\r\n\t ]+/gi," ");
 					if (text!==" "){
-						if (attribnumber==0&&options.autoinline){
+						if (attribnumber==0&&autoinline){
 							hierachy[hierachy.length-1][tag]=text;
 						} else {
 							current.$text=text;
 						}
 					}
-				}						
+				}				
 				if (attribs.length==0||attribs.lastIndexOf("/")!=attribs.length-1){
 					hierachy[hierachy.length]=current;
 				} else {
